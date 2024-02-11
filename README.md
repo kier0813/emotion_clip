@@ -26,6 +26,12 @@ Furthermore, you can install our conda environment with the environment.yml file
   cat environment.yml
   ```
 
+### Dataset
+
+FER2013
+
+[Image Download Link](https://www.kaggle.com/datasets/msambare/fer2013)
+
 ## Citations
 
 - **CLIP by OpenAI**: [GitHub Repository](https://github.com/openai/CLIP)
