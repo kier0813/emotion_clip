@@ -14,7 +14,7 @@ Jupyterhub environment
 
 ### Prerequisites
 
-- **Python 3.10**: Download from [Python's official website](https://www.python.org/downloads/).
+- **Python 3.9 or higher**: Download from [Python's official website](https://www.python.org/downloads/).
 
 ### Installation
 
