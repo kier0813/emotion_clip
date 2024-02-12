@@ -26,6 +26,9 @@ Furthermore, you can install our conda environment with the environment.yml file
 
   ```bash
   cat environment.yml
+
+  conda env create --name new_env_name -f environment.yml
+
   ```
 
 ### Dataset
