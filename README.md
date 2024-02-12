@@ -8,6 +8,8 @@ CPU: 8CPU
 
 RAM: 16GB
 
+GPU: 1GPU
+
 Jupyterhub environment
 
 ### Prerequisites
