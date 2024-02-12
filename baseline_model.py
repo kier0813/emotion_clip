@@ -1,3 +1,5 @@
+import sys
+sys.path.append('CLIP-dissect') 
 import os
 import torch
 import torchvision
