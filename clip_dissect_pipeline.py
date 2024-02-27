@@ -20,7 +20,7 @@ import utils
 import data_utils
 
 
-def dissect_pipeline(d_probe, concept_set, similarity_fn):
+def dissect_pipeline(d_probe, concept_set, similarity_fn, target_name, target_layer):
     '''
     Function that fixes setting for CLIP-dissect
     d_probe: images that are being used
@@ -37,8 +37,8 @@ def dissect_pipeline(d_probe, concept_set, similarity_fn):
     save_dir = 'saved_activations'
     similarity_fn = similarity_fn
 
-    target_name = 'emotion'
-    target_layer = 'fc2' # last layer
+    target_name = target_name
+    target_layer = target_layer # last layer
 
     utils.save_activations(clip_name = clip_name, target_name = target_name, target_layers = [target_layer], 
                        d_probe = d_probe, concept_set = concept_set, batch_size = batch_size, 
