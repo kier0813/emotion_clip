@@ -1,16 +1,19 @@
 import os
 import torch
 import pandas as pd
+from models import Deep_Emotion, Vgg
 from torchvision import datasets, transforms, models
 
-DATASET_ROOTS = {"imagenet_val": "YOUR_PATH/ImageNet_val/",
-                "broden": "data/broden1_224/images/"}
+DATASET_ROOTS = {"imagenet_val": "imagenet_val/",
+                "broden": "data/broden1_224/images/",
+                "FER2013": "FER2013/train/",
+                "affectnet": "affectnet/affectnet/train"}
 
 
 def get_target_model(target_name, device):
     """
     returns target model in eval mode and its preprocess function
-    target_name: supported options - {resnet18_places, resnet18, resnet34, resnet50, resnet101, resnet152}
+    target_name: supported options - {resnet18_places, resnet18, resnet34, resnet50, resnet101, resnet152, face_emotion_deep_emotion}
                  except for resnet18_places this will return a model trained on ImageNet from torchvision
                  
     To Dissect a different model implement its loading and preprocessing function here
@@ -35,7 +38,23 @@ def get_target_model(target_name, device):
         weights = eval("models.{}_Weights.IMAGENET1K_V1".format(target_name_cap))
         preprocess = weights.transforms()
         target_model = eval("models.{}(weights=weights).to(device)".format(target_name))
-    
+    elif target_name == 'emotion':
+        preprocess = transforms.Compose([transforms.ToTensor(),transforms.Resize((48, 48), antialias=True)])
+        model_path = os.path.join(os.path.dirname(os.path.dirname(__file__)), 'face_emotion_deep_emotion.pth')
+        target_model = Deep_Emotion().to('cuda')
+        target_model.load_state_dict(torch.load(model_path))
+        target_model.to(device)
+    elif target_name == 'deep_emotion':
+        mu, st = 0, 1
+        preprocess = transforms.Compose([
+                    transforms.ToTensor(),
+                    transforms.Resize((40, 40), antialias=True),
+                    transforms.functional.rgb_to_grayscale,
+                ])
+        model_path = os.path.join(os.path.dirname(os.path.dirname(__file__)), 'VGGNet')
+        checkpoint = torch.load(model_path)
+        target_model = Vgg().to(device)
+        target_model.load_state_dict(checkpoint["params"])
     target_model.eval()
     return target_model, preprocess
 
@@ -55,13 +74,20 @@ def get_data(dataset_name, preprocess=None):
         data = datasets.CIFAR100(root=os.path.expanduser("~/.cache"), download=True, train=False, 
                                    transform=preprocess)
         
+    elif dataset_name == "FER2013":
+        data = datasets.ImageFolder(DATASET_ROOTS[dataset_name], preprocess)
+
+    elif dataset_name == "affectnet":
+        data = datasets.ImageFolder(DATASET_ROOTS[dataset_name], preprocess)
+        
     elif dataset_name in DATASET_ROOTS.keys():
         data = datasets.ImageFolder(DATASET_ROOTS[dataset_name], preprocess)
+
                
     elif dataset_name == "imagenet_broden":
         data = torch.utils.data.ConcatDataset([datasets.ImageFolder(DATASET_ROOTS["imagenet_val"], preprocess), 
                                                      datasets.ImageFolder(DATASET_ROOTS["broden"], preprocess)])
-        
+    data = datasets.ImageFolder(DATASET_ROOTS[dataset_name], preprocess)
     return data
 
 
